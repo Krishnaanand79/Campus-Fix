@@ -45,23 +45,23 @@ export const StatusChangeModal = ({ issue, isOpen, onClose, onSuccess }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fadeIn">
-      <div className="glass-panel rounded-3xl max-w-md w-full p-6 relative border border-stone-200/70 dark:border-stone-800/80 shadow-2xl">
+      <div className="glass-panel rounded-3xl max-w-md w-full p-6 relative border border-slate-200/70 dark:border-slate-800/80 shadow-2xl">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-2 rounded-xl text-stone-400 hover:text-stone-600 dark:hover:text-stone-200 hover:bg-stone-200/50 dark:hover:bg-stone-800/50"
+          className="absolute top-4 right-4 p-2 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-200/50 dark:hover:bg-slate-800/50"
         >
           <X className="w-4 h-4" />
         </button>
 
-        <div className="flex items-center gap-2.5 text-indigo-600 dark:text-indigo-400 mb-2">
+        <div className="flex items-center gap-2.5 text-indigo-600 dark:text-cyan-400 mb-2">
           <div className="p-2 rounded-xl bg-indigo-500/20">
             <Sliders className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="text-base font-bold text-stone-900 dark:text-stone-100">
+            <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
               Update Issue Status
             </h3>
-            <p className="text-xs text-stone-500 dark:text-stone-400">
+            <p className="text-xs text-slate-500 dark:text-slate-400">
               Calibrate complaint lifecycle state
             </p>
           </div>
@@ -76,13 +76,13 @@ export const StatusChangeModal = ({ issue, isOpen, onClose, onSuccess }) => {
 
         <form onSubmit={handleSubmit} className="space-y-4 my-3">
           <div>
-            <label className="block text-xs font-semibold text-stone-700 dark:text-stone-300 mb-1">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
               Select New Status
             </label>
             <select
               value={status}
               onChange={(e) => setStatus(e.target.value)}
-              className="w-full p-2.5 rounded-xl text-xs glass-input"
+              className="w-full p-2.5 rounded-xl text-xs glass-input cursor-pointer text-slate-700 dark:text-slate-200"
             >
               {STATUSES.map((s) => (
                 <option key={s} value={s}>
@@ -93,7 +93,7 @@ export const StatusChangeModal = ({ issue, isOpen, onClose, onSuccess }) => {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-stone-700 dark:text-stone-300 mb-1">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
               Admin Audit Note (Optional)
             </label>
             <textarea
@@ -105,18 +105,18 @@ export const StatusChangeModal = ({ issue, isOpen, onClose, onSuccess }) => {
             />
           </div>
 
-          <div className="flex justify-end gap-2 pt-3 border-t border-stone-200/50 dark:border-stone-800/60">
+          <div className="flex justify-end gap-2 pt-3 border-t border-slate-200/50 dark:border-slate-800/60">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-xl text-xs font-semibold glass-card text-stone-600 dark:text-stone-300"
+              className="px-4 py-2 rounded-xl text-xs font-semibold glass-card text-slate-600 dark:text-slate-300 hover:text-slate-900 cursor-pointer"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={submitting}
-              className="px-5 py-2 rounded-xl text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 shadow-lg"
+              className="px-5 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-indigo-600 to-cyan-500 hover:opacity-95 shadow-glowBrand cursor-pointer"
             >
               {submitting ? 'Saving...' : 'Update Status'}
             </button>

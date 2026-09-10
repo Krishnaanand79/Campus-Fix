@@ -75,30 +75,40 @@ export const AdminDashboardPage = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
       {/* Header Banner */}
-      <div className="glass-panel rounded-3xl p-6 sm:p-8 border border-stone-200/70 dark:border-stone-800/80 shadow-glass flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-        <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 border border-indigo-500/30 mb-2">
-            <Shield className="w-3.5 h-3.5" />
-            <span>Campus Operations & Estate Directorate</span>
+      <div className="glass-panel rounded-3xl p-6 sm:p-8 border border-slate-200/70 dark:border-slate-800/80 shadow-glass flex flex-col md:flex-row items-start md:items-center justify-between gap-4 relative overflow-hidden">
+        {/* Subtle background emblem watermark */}
+        <div className="absolute -right-8 -bottom-8 w-44 h-44 opacity-5 dark:opacity-10 pointer-events-none select-none">
+          <img src="/campusfixWithoutNamelogo.png" alt="" className="w-full h-full object-contain" />
+        </div>
+
+        <div className="flex items-start gap-4">
+          <div className="w-16 h-16 sm:w-20 sm:h-20 shrink-0 hidden sm:block drop-shadow-lg">
+            <img src="/campusfixWithoutNamelogo.png" alt="CampusFix" className="w-full h-full object-contain" />
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-stone-900 dark:text-stone-100">
-            Maintenance Command Center
-          </h1>
-          <p className="text-xs sm:text-sm text-stone-500 dark:text-stone-400 mt-1">
-            Review community complaints, calibrate smart priority, and dispatch certified technicians.
-          </p>
+          <div>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-indigo-500/15 text-indigo-600 dark:text-cyan-400 border border-indigo-500/30 mb-2">
+              <Shield className="w-3.5 h-3.5" />
+              <span>Campus Operations & Estate Directorate</span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-slate-100">
+              Maintenance Command Center
+            </h1>
+            <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
+              Review community complaints, calibrate smart priority, and dispatch certified technicians.
+            </p>
+          </div>
         </div>
 
         <div className="flex items-center gap-2">
           <Link
             to="/admin/analytics"
-            className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-indigo-600 hover:bg-indigo-700 shadow-md flex items-center gap-1.5"
+            className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-indigo-600 to-cyan-500 hover:opacity-95 shadow-glowBrand flex items-center gap-1.5 cursor-pointer"
           >
             <LayoutDashboard className="w-4 h-4" /> Full Analytics
           </Link>
           <button
             onClick={fetchAdminData}
-            className="p-2 rounded-xl glass-card text-stone-600 dark:text-stone-300 hover:text-indigo-500"
+            className="p-2.5 rounded-xl glass-card text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-cyan-400 cursor-pointer"
             title="Refresh Data"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
@@ -108,40 +118,40 @@ export const AdminDashboardPage = () => {
 
       {/* KPI Overview Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
-        <div className="glass-card rounded-2xl p-4 border border-stone-200/60 dark:border-stone-800/60">
-          <p className="text-[10px] uppercase font-bold text-stone-400">Total Tracked</p>
-          <p className="text-2xl font-extrabold text-stone-900 dark:text-stone-100 mt-1">
+        <div className="glass-card rounded-2xl p-4 border border-slate-200/70 dark:border-slate-800/80">
+          <p className="text-[10px] uppercase font-bold text-slate-400">Total Tracked</p>
+          <p className="text-2xl font-extrabold text-slate-900 dark:text-slate-100 mt-1">
             {stats?.total || 0}
           </p>
-          <span className="text-[10px] text-amber-500 font-semibold">Campus-Wide</span>
+          <span className="text-[10px] text-indigo-500 font-semibold">Campus-Wide</span>
         </div>
 
-        <div className="glass-card rounded-2xl p-4 border border-stone-200/60 dark:border-stone-800/60">
-          <p className="text-[10px] uppercase font-bold text-stone-400">Under Review</p>
-          <p className="text-2xl font-extrabold text-amber-500 mt-1">
+        <div className="glass-card rounded-2xl p-4 border border-slate-200/70 dark:border-slate-800/80">
+          <p className="text-[10px] uppercase font-bold text-slate-400">Under Review</p>
+          <p className="text-2xl font-extrabold text-indigo-500 dark:text-cyan-400 mt-1">
             {stats?.pending || 0}
           </p>
-          <span className="text-[10px] text-stone-400">Needs verification</span>
+          <span className="text-[10px] text-slate-400">Needs verification</span>
         </div>
 
-        <div className="glass-card rounded-2xl p-4 border border-stone-200/60 dark:border-stone-800/60">
-          <p className="text-[10px] uppercase font-bold text-stone-400">In Progress</p>
-          <p className="text-2xl font-extrabold text-orange-500 mt-1">
+        <div className="glass-card rounded-2xl p-4 border border-slate-200/70 dark:border-slate-800/80">
+          <p className="text-[10px] uppercase font-bold text-slate-400">In Progress</p>
+          <p className="text-2xl font-extrabold text-cyan-500 mt-1">
             {stats?.inProgress || 0}
           </p>
-          <span className="text-[10px] text-stone-400">Workers dispatched</span>
+          <span className="text-[10px] text-slate-400">Workers dispatched</span>
         </div>
 
-        <div className="glass-card rounded-2xl p-4 border border-stone-200/60 dark:border-stone-800/60">
-          <p className="text-[10px] uppercase font-bold text-stone-400">Critical Alerts</p>
+        <div className="glass-card rounded-2xl p-4 border border-slate-200/70 dark:border-slate-800/80">
+          <p className="text-[10px] uppercase font-bold text-slate-400">Critical Alerts</p>
           <p className="text-2xl font-extrabold text-rose-500 mt-1">
             {stats?.critical || 0}
           </p>
           <span className="text-[10px] text-rose-400">Immediate hazard</span>
         </div>
 
-        <div className="glass-card rounded-2xl p-4 border border-stone-200/60 dark:border-stone-800/60 col-span-2 lg:col-span-1">
-          <p className="text-[10px] uppercase font-bold text-stone-400">Avg Resolution</p>
+        <div className="glass-card rounded-2xl p-4 border border-slate-200/70 dark:border-slate-800/80 col-span-2 lg:col-span-1">
+          <p className="text-[10px] uppercase font-bold text-slate-400">Avg Resolution</p>
           <p className="text-2xl font-extrabold text-emerald-500 mt-1">
             {stats?.avgResolutionHours || 0}h
           </p>
@@ -150,9 +160,9 @@ export const AdminDashboardPage = () => {
       </div>
 
       {/* Filter and Search */}
-      <div className="glass-panel rounded-2xl p-4 border border-stone-200/60 dark:border-stone-800/60 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div className="glass-panel rounded-2xl p-4 border border-slate-200/70 dark:border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-3">
         <div className="relative w-full sm:max-w-xs">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
           <input
             type="text"
             value={search}
@@ -166,7 +176,7 @@ export const AdminDashboardPage = () => {
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-3 py-1.5 rounded-xl text-xs glass-input cursor-pointer"
+            className="px-3 py-1.5 rounded-xl text-xs glass-input cursor-pointer text-slate-700 dark:text-slate-200"
           >
             <option value="All">All Statuses</option>
             <option value="REPORTED">Reported</option>
@@ -181,7 +191,7 @@ export const AdminDashboardPage = () => {
           <select
             value={priorityFilter}
             onChange={(e) => setPriorityFilter(e.target.value)}
-            className="px-3 py-1.5 rounded-xl text-xs glass-input cursor-pointer"
+            className="px-3 py-1.5 rounded-xl text-xs glass-input cursor-pointer text-slate-700 dark:text-slate-200"
           >
             <option value="All">All Priorities</option>
             <option value="CRITICAL">Critical</option>
@@ -193,11 +203,11 @@ export const AdminDashboardPage = () => {
       </div>
 
       {/* Issues Management Table */}
-      <div className="glass-panel rounded-3xl overflow-hidden border border-stone-200/70 dark:border-stone-800/80 shadow-glass">
+      <div className="glass-panel rounded-3xl overflow-hidden border border-slate-200/70 dark:border-slate-800/80 shadow-glass">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-xs">
             <thead>
-              <tr className="border-b border-stone-200/60 dark:border-stone-800/60 bg-stone-100/50 dark:bg-stone-900/50 text-stone-500 dark:text-stone-400 uppercase text-[10px] tracking-wider font-bold">
+              <tr className="border-b border-slate-200/60 dark:border-slate-800/60 bg-slate-100/60 dark:bg-slate-900/60 text-slate-500 dark:text-slate-400 uppercase text-[10px] tracking-wider font-bold">
                 <th className="p-4">Issue Title & Category</th>
                 <th className="p-4">Location</th>
                 <th className="p-4">+1 Votes</th>
@@ -207,44 +217,44 @@ export const AdminDashboardPage = () => {
                 <th className="p-4 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-stone-200/50 dark:divide-stone-800/50">
+            <tbody className="divide-y divide-slate-200/50 dark:divide-slate-800/50">
               {loading ? (
                 <tr>
-                  <td colSpan="7" className="p-8 text-center text-stone-400">
+                  <td colSpan="7" className="p-8 text-center text-slate-400">
                     Loading admin table...
                   </td>
                 </tr>
               ) : issues.length === 0 ? (
                 <tr>
-                  <td colSpan="7" className="p-8 text-center text-stone-400">
-                    No complaints match the filter.
+                  <td colSpan="7" className="p-8 text-center text-slate-400">
+                    No complaints match the active filter criteria.
                   </td>
                 </tr>
               ) : (
                 issues.map((issue) => (
                   <tr
                     key={issue._id}
-                    className="hover:bg-amber-500/5 transition-colors group"
+                    className="hover:bg-indigo-500/5 transition-colors group"
                   >
                     <td className="p-4 max-w-xs">
                       <Link
                         to={`/issues/${issue._id}`}
-                        className="font-bold text-stone-900 dark:text-stone-100 hover:text-amber-500 flex items-center gap-1.5 leading-snug line-clamp-2"
+                        className="font-bold text-slate-900 dark:text-slate-100 hover:text-indigo-600 dark:hover:text-cyan-400 flex items-center gap-1.5 leading-snug line-clamp-2"
                       >
                         {issue.title}
                         <ExternalLink className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
                       </Link>
-                      <span className="text-[10px] font-semibold text-amber-600 dark:text-amber-400">
+                      <span className="text-[10px] font-semibold text-indigo-600 dark:text-cyan-400">
                         {issue.category}
                       </span>
                     </td>
 
-                    <td className="p-4 whitespace-nowrap text-stone-600 dark:text-stone-300">
+                    <td className="p-4 whitespace-nowrap text-slate-600 dark:text-slate-300">
                       <p className="font-semibold">{issue.location?.block}</p>
-                      <p className="text-[10px] text-stone-400">{issue.location?.area}</p>
+                      <p className="text-[10px] text-slate-400">{issue.location?.area}</p>
                     </td>
 
-                    <td className="p-4 whitespace-nowrap font-bold text-amber-500">
+                    <td className="p-4 whitespace-nowrap font-bold text-cyan-600 dark:text-cyan-400">
                       👍 {issue.upvotesCount || 1}
                     </td>
 
@@ -267,28 +277,28 @@ export const AdminDashboardPage = () => {
                               )}`
                             }
                             alt=""
-                            className="w-6 h-6 rounded-md object-cover ring-1 ring-stone-300"
+                            className="w-6 h-6 rounded-md object-cover ring-1 ring-slate-300"
                           />
-                          <span className="font-semibold text-stone-800 dark:text-stone-200">
+                          <span className="font-semibold text-slate-800 dark:text-slate-200">
                             {issue.assignedWorker.name}
                           </span>
                         </div>
                       ) : (
-                        <span className="text-stone-400 italic">Unassigned</span>
+                        <span className="text-slate-400 italic">Unassigned</span>
                       )}
                     </td>
 
                     <td className="p-4 whitespace-nowrap text-right space-x-1.5">
                       <button
                         onClick={() => openAssignModal(issue)}
-                        className="px-2.5 py-1.5 rounded-lg text-[11px] font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-500/10 hover:bg-indigo-500/20"
+                        className="px-2.5 py-1.5 rounded-lg text-[11px] font-bold text-indigo-600 dark:text-cyan-400 bg-indigo-500/10 hover:bg-indigo-500/20 cursor-pointer"
                         title="Assign or reassign technician"
                       >
                         Assign
                       </button>
                       <button
                         onClick={() => openStatusModal(issue)}
-                        className="px-2.5 py-1.5 rounded-lg text-[11px] font-bold text-stone-600 dark:text-stone-300 bg-stone-200/60 dark:bg-stone-800/80 hover:bg-stone-300"
+                        className="px-2.5 py-1.5 rounded-lg text-[11px] font-bold text-slate-600 dark:text-slate-300 bg-slate-200/60 dark:bg-slate-800/80 hover:bg-slate-300 cursor-pointer"
                         title="Change status"
                       >
                         Status

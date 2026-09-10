@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import {
   Flame,
   PlusCircle,
@@ -8,22 +8,33 @@ import {
   TrendingUp,
   AlertCircle,
   RefreshCw,
+  Radio,
+  CheckCircle2,
 } from 'lucide-react';
 import api from '../services/api';
 import { IssueCard } from '../components/feed/IssueCard';
 import { IssueFilterBar } from '../components/feed/IssueFilterBar';
 
 export const HomeFeedPage = () => {
+  const [searchParams] = useSearchParams();
+  const urlCategory = searchParams.get('category');
+
   const [issues, setIssues] = useState([]);
   const [loading, setLoading] = useState(true);
   const [total, setTotal] = useState(0);
 
   // Filters state
   const [search, setSearch] = useState('');
-  const [category, setCategory] = useState('All');
+  const [category, setCategory] = useState(urlCategory || 'All');
   const [block, setBlock] = useState('All');
   const [status, setStatus] = useState('All');
   const [sortBy, setSortBy] = useState('priority');
+
+  useEffect(() => {
+    if (urlCategory) {
+      setCategory(urlCategory);
+    }
+  }, [urlCategory]);
 
   const fetchIssues = useCallback(async () => {
     try {
@@ -65,62 +76,50 @@ export const HomeFeedPage = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-      {/* Hero Banner with Warm Glassmorphism & Micro-Interactions */}
-      <div className="relative rounded-3xl overflow-hidden glass-panel p-6 sm:p-10 border border-stone-200/70 dark:border-stone-800/80 shadow-glass">
-        {/* Glow ambient accent */}
-        <div className="absolute top-0 right-0 w-80 h-80 bg-radial from-amber-500/20 to-transparent blur-3xl pointer-events-none" />
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+      {/* Streamlined Live Feed Header */}
+      <div className="relative rounded-3xl overflow-hidden glass-panel p-6 sm:p-8 border border-slate-200/70 dark:border-slate-800/80 shadow-glass flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
+        {/* Subtle background emblem watermark */}
+        <div className="absolute -right-10 -bottom-10 w-48 h-48 opacity-5 dark:opacity-10 pointer-events-none select-none">
+          <img src="/campusfixWithoutNamelogo.png" alt="" className="w-full h-full object-contain" />
+        </div>
 
-        <div className="relative z-10 max-w-3xl space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30 backdrop-blur-md">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>Community-Powered Campus Infrastructure</span>
+        <div className="flex items-start gap-4 max-w-2xl">
+          <div className="w-16 h-16 sm:w-20 sm:h-20 shrink-0 hidden sm:block drop-shadow-md">
+            <img src="/campusfixWithoutNamelogo.png" alt="CampusFix" className="w-full h-full object-contain" />
           </div>
+          <div className="space-y-1.5">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-indigo-500/15 text-indigo-600 dark:text-cyan-400 border border-indigo-500/30">
+              <Radio className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
+              <span>Campus Live Maintenance Feed</span>
+            </div>
 
-          <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-stone-900 dark:text-stone-100 leading-tight">
-            Fixing Campus Problems,{' '}
-            <span className="bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 bg-clip-text text-transparent">
-              Together.
-            </span>
-          </h1>
+            <h1 className="text-2xl sm:text-4xl font-extrabold text-slate-900 dark:text-slate-100">
+              Active Campus Issues Queue
+            </h1>
 
-          <p className="text-sm sm:text-base text-stone-600 dark:text-stone-300 leading-relaxed max-w-2xl">
-            Spot a broken tap, burnt light, or faulty lab AC? Report it in seconds or{' '}
-            <strong className="text-amber-500">+1 existing issues</strong> to elevate their smart priority score. Track every repair with verified before/after proof.
-          </p>
-
-          <div className="flex flex-wrap items-center gap-3 pt-2">
-            <Link
-              to="/report"
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:opacity-95 shadow-glowAmber hover:scale-[1.02] active:scale-[0.98] transition-all"
-            >
-              <PlusCircle className="w-4 h-4" /> Report Campus Issue
-            </Link>
-
-            <button
-              onClick={fetchIssues}
-              className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold glass-card text-stone-700 dark:text-stone-200 hover:border-amber-500/40 transition-all"
-            >
-              <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-              Refresh Feed
-            </button>
+            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+              Real-time public operations board. Upvote issues affecting your block to increase priority, or click any ticket to inspect before/after verification proof.
+            </p>
           </div>
         </div>
 
-        {/* Live Mini Highlights Counter */}
-        <div className="hidden lg:grid grid-cols-3 gap-4 absolute right-8 bottom-8 max-w-sm w-full">
-          <div className="p-3.5 rounded-2xl glass-card border border-stone-200/50 dark:border-stone-800/60 text-center">
-            <p className="text-xl font-extrabold text-amber-500">{total}</p>
-            <p className="text-[10px] uppercase font-bold text-stone-400">Total Tracked</p>
-          </div>
-          <div className="p-3.5 rounded-2xl glass-card border border-stone-200/50 dark:border-stone-800/60 text-center">
-            <p className="text-xl font-extrabold text-emerald-500">100%</p>
-            <p className="text-[10px] uppercase font-bold text-stone-400">Proof Required</p>
-          </div>
-          <div className="p-3.5 rounded-2xl glass-card border border-stone-200/50 dark:border-stone-800/60 text-center">
-            <p className="text-xl font-extrabold text-orange-500">+1</p>
-            <p className="text-[10px] uppercase font-bold text-stone-400">Community Votes</p>
-          </div>
+        <div className="flex items-center gap-3 shrink-0">
+          <Link
+            to="/report"
+            className="flex items-center gap-2 px-5 py-2.5 rounded-2xl text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-indigo-600 via-blue-600 to-cyan-500 hover:opacity-95 shadow-glowBrand hover:scale-[1.02] transition-all"
+          >
+            <PlusCircle className="w-4 h-4" /> Report Problem
+          </Link>
+
+          <button
+            onClick={fetchIssues}
+            className="flex items-center gap-1.5 px-4 py-2.5 rounded-2xl text-xs font-semibold glass-card text-slate-700 dark:text-slate-200 hover:border-indigo-500/40 transition-all"
+            title="Refresh Feed"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+            <span>Refresh</span>
+          </button>
         </div>
       </div>
 
@@ -141,10 +140,10 @@ export const HomeFeedPage = () => {
       {/* Issues Grid */}
       <div>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-base font-bold text-stone-900 dark:text-stone-100 flex items-center gap-2">
-            <TrendingUp className="w-4 h-4 text-amber-500" />
+          <h2 className="text-base font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
+            <TrendingUp className="w-4 h-4 text-indigo-500" />
             <span>Public Campus Maintenance Feed</span>
-            <span className="text-xs font-normal text-stone-400">({total} complaints)</span>
+            <span className="text-xs font-normal text-slate-400">({total} tickets)</span>
           </h2>
         </div>
 
@@ -153,30 +152,42 @@ export const HomeFeedPage = () => {
             {[1, 2, 3, 4, 5, 6].map((n) => (
               <div
                 key={n}
-                className="h-72 rounded-2xl glass-card animate-pulse bg-stone-200/40 dark:bg-stone-800/40"
+                className="h-72 rounded-3xl glass-card animate-pulse bg-slate-200/50 dark:bg-slate-800/40"
               />
             ))}
           </div>
         ) : issues.length === 0 ? (
-          <div className="text-center py-16 glass-panel rounded-3xl border border-dashed border-stone-300 dark:border-stone-700">
-            <AlertCircle className="w-10 h-10 text-stone-400 mx-auto mb-3" />
-            <h3 className="text-base font-bold text-stone-900 dark:text-stone-100">
-              No Campus Issues Found
-            </h3>
-            <p className="text-xs text-stone-500 dark:text-stone-400 mt-1 max-w-sm mx-auto">
-              No complaints matched your current filter criteria. Try clearing search keywords or selecting another category.
-            </p>
-            <button
-              onClick={() => {
-                setSearch('');
-                setCategory('All');
-                setBlock('All');
-                setStatus('All');
-              }}
-              className="mt-4 px-4 py-2 rounded-xl text-xs font-bold text-amber-600 dark:text-amber-400 glass-card"
-            >
-              Reset Filters
-            </button>
+          <div className="text-center py-16 px-4 glass-panel rounded-3xl border border-dashed border-slate-300 dark:border-slate-700 space-y-4 max-w-2xl mx-auto">
+            <div className="w-24 h-24 mx-auto drop-shadow-md">
+              <img src="/campusfixWithoutNamelogo.png" alt="CampusFix" className="w-full h-full object-contain" />
+            </div>
+            <div>
+              <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100">
+                No Campus Issues Found
+              </h3>
+              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 max-w-sm mx-auto">
+                No complaints match your active filter criteria or no issues have been filed yet.
+              </p>
+            </div>
+            <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
+              <button
+                onClick={() => {
+                  setSearch('');
+                  setCategory('All');
+                  setBlock('All');
+                  setStatus('All');
+                }}
+                className="px-4 py-2 rounded-xl text-xs font-bold text-indigo-600 dark:text-cyan-400 glass-card hover:border-indigo-500"
+              >
+                Reset Filters
+              </button>
+              <Link
+                to="/report"
+                className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-indigo-600 to-cyan-500 shadow-glowBrand hover:opacity-95"
+              >
+                Report New Issue
+              </Link>
+            </div>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

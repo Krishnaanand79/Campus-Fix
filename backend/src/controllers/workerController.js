@@ -1,21 +1,44 @@
 import { Issue } from '../models/Issue.js';
 import { Notification } from '../models/Notification.js';
 
-// Get tasks assigned to the logged-in worker
+// Get tasks assigned to worker (or all/selected worker tasks if requested by Admin)
 export const getAssignedTasks = async (req, res) => {
   try {
-    const { status } = req.query;
-    const query = { assignedWorker: req.user._id };
+    const { status, workerId } = req.query;
+    const query = {};
 
-    if (status && status !== 'All') {
-      query.status = status;
+    // Role-aware assignment filtering
+    if (req.user.role === 'WORKER') {
+      // Maintenance worker sees only their own assigned work orders
+      query.assignedWorker = req.user._id;
+    } else if (req.user.role === 'ADMIN') {
+      // Campus Admin can view a specific technician's queue or all dispatched tasks
+      if (workerId && workerId.toUpperCase() !== 'ALL') {
+        query.assignedWorker = workerId;
+      } else {
+        query.assignedWorker = { $ne: null };
+      }
+    } else {
+      return res.status(403).json({ success: false, message: 'Unauthorized role for worker queue' });
+    }
+
+    // Status filtering with robust case-insensitivity
+    if (status && status.toUpperCase() !== 'ALL') {
+      const upperStatus = status.toUpperCase();
+      if (upperStatus === 'RESOLVED') {
+        // Show both pending verification and completed/closed work
+        query.status = { $in: ['RESOLVED', 'CLOSED', 'USER_VERIFIED'] };
+      } else {
+        query.status = upperStatus;
+      }
     }
 
     const tasks = await Issue.find(query)
       .populate('reportedBy', 'name email department phone avatar')
+      .populate('assignedWorker', 'name email department phone avatar specialties')
       .sort({ priorityScore: -1, createdAt: -1 });
 
-    return res.status(200).json({ success: true, tasks });
+    return res.status(200).json({ success: true, count: tasks.length, tasks });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
@@ -24,15 +47,23 @@ export const getAssignedTasks = async (req, res) => {
 // Worker acknowledges the assigned task
 export const acknowledgeTask = async (req, res) => {
   try {
-    const issue = await Issue.findOne({
-      _id: req.params.id,
-      assignedWorker: req.user._id,
-    });
+    const issue = await Issue.findById(req.params.id);
 
     if (!issue) {
       return res.status(404).json({
         success: false,
-        message: 'Task not found or you are not assigned to this issue.',
+        message: 'Task not found.',
+      });
+    }
+
+    const isAssigned =
+      issue.assignedWorker?.toString() === req.user._id.toString() ||
+      req.user.role === 'ADMIN';
+
+    if (!isAssigned) {
+      return res.status(403).json({
+        success: false,
+        message: 'You are not assigned to this issue.',
       });
     }
 
@@ -41,21 +72,23 @@ export const acknowledgeTask = async (req, res) => {
     issue.timeline.push({
       status: 'ACKNOWLEDGED',
       changedBy: req.user._id,
-      note: 'Maintenance worker acknowledged and accepted the task.',
+      note: `Maintenance technician ${req.user.name} acknowledged and accepted the task.`,
       timestamp: new Date(),
     });
 
     await issue.save();
 
     // Notify the reporter
-    await Notification.create({
-      recipient: issue.reportedBy,
-      sender: req.user._id,
-      issueId: issue._id,
-      title: 'Task Acknowledged',
-      message: `Worker ${req.user.name} has acknowledged your complaint and scheduled work.`,
-      type: 'STATUS_CHANGE',
-    });
+    if (issue.reportedBy) {
+      await Notification.create({
+        recipient: issue.reportedBy,
+        sender: req.user._id,
+        issueId: issue._id,
+        title: 'Task Acknowledged',
+        message: `Worker ${req.user.name} has acknowledged your complaint and scheduled work.`,
+        type: 'STATUS_CHANGE',
+      });
+    }
 
     return res.status(200).json({
       success: true,
@@ -70,15 +103,23 @@ export const acknowledgeTask = async (req, res) => {
 // Worker marks task in progress
 export const startTask = async (req, res) => {
   try {
-    const issue = await Issue.findOne({
-      _id: req.params.id,
-      assignedWorker: req.user._id,
-    });
+    const issue = await Issue.findById(req.params.id);
 
     if (!issue) {
       return res.status(404).json({
         success: false,
-        message: 'Task not found or not assigned to you.',
+        message: 'Task not found.',
+      });
+    }
+
+    const isAssigned =
+      issue.assignedWorker?.toString() === req.user._id.toString() ||
+      req.user.role === 'ADMIN';
+
+    if (!isAssigned) {
+      return res.status(403).json({
+        success: false,
+        message: 'You are not assigned to this task.',
       });
     }
 
@@ -87,20 +128,22 @@ export const startTask = async (req, res) => {
     issue.timeline.push({
       status: 'IN_PROGRESS',
       changedBy: req.user._id,
-      note: 'Work has commenced on-site by maintenance staff.',
+      note: `Work has commenced on-site by ${req.user.name}.`,
       timestamp: new Date(),
     });
 
     await issue.save();
 
-    await Notification.create({
-      recipient: issue.reportedBy,
-      sender: req.user._id,
-      issueId: issue._id,
-      title: 'Work In Progress 🔨',
-      message: `Maintenance technician ${req.user.name} is actively working on "${issue.title}".`,
-      type: 'STATUS_CHANGE',
-    });
+    if (issue.reportedBy) {
+      await Notification.create({
+        recipient: issue.reportedBy,
+        sender: req.user._id,
+        issueId: issue._id,
+        title: 'Work In Progress 🔨',
+        message: `Maintenance technician ${req.user.name} is actively working on "${issue.title}".`,
+        type: 'STATUS_CHANGE',
+      });
+    }
 
     return res.status(200).json({
       success: true,
@@ -116,15 +159,23 @@ export const startTask = async (req, res) => {
 export const resolveTask = async (req, res) => {
   try {
     const { workNotes, beforeMedia, afterMedia } = req.body;
-    const issue = await Issue.findOne({
-      _id: req.params.id,
-      assignedWorker: req.user._id,
-    });
+    const issue = await Issue.findById(req.params.id);
 
     if (!issue) {
       return res.status(404).json({
         success: false,
-        message: 'Task not found or not assigned to you.',
+        message: 'Task not found.',
+      });
+    }
+
+    const isAssigned =
+      issue.assignedWorker?.toString() === req.user._id.toString() ||
+      req.user.role === 'ADMIN';
+
+    if (!isAssigned) {
+      return res.status(403).json({
+        success: false,
+        message: 'You are not assigned to this task.',
       });
     }
 
@@ -138,7 +189,7 @@ export const resolveTask = async (req, res) => {
       });
     }
 
-    if (!workNotes) {
+    if (!workNotes || !workNotes.trim()) {
       return res.status(400).json({
         success: false,
         message: 'Please provide notes detailing the repair work done.',
@@ -150,28 +201,30 @@ export const resolveTask = async (req, res) => {
     issue.proof = {
       beforeMedia: proofBefore.length > 0 ? proofBefore : (issue.images || []),
       afterMedia: proofAfter,
-      workNotes,
+      workNotes: workNotes.trim(),
       completedAt: new Date(),
     };
 
     issue.timeline.push({
       status: 'RESOLVED',
       changedBy: req.user._id,
-      note: `Task completed. Notes: ${workNotes}`,
+      note: `Task completed by ${req.user.name}. Notes: ${workNotes.trim()}`,
       timestamp: new Date(),
     });
 
     await issue.save();
 
     // Trigger verification request notification to reporter
-    await Notification.create({
-      recipient: issue.reportedBy,
-      sender: req.user._id,
-      issueId: issue._id,
-      title: '🎉 Issue Marked Resolved! Please Verify',
-      message: `Worker ${req.user.name} has completed maintenance on "${issue.title}". Please verify the fix and rate the service!`,
-      type: 'VERIFICATION_REQUEST',
-    });
+    if (issue.reportedBy) {
+      await Notification.create({
+        recipient: issue.reportedBy,
+        sender: req.user._id,
+        issueId: issue._id,
+        title: '🎉 Issue Marked Resolved! Please Verify',
+        message: `Worker ${req.user.name} has completed maintenance on "${issue.title}". Please verify the fix and rate the service!`,
+        type: 'VERIFICATION_REQUEST',
+      });
+    }
 
     return res.status(200).json({
       success: true,

@@ -18,6 +18,7 @@ import {
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { StatusBadge, PriorityBadge } from '../components/common/Badge';
+import { CategoryBadge } from '../components/common/CategoryIcons';
 import { IssueTimeline } from '../components/issues/IssueTimeline';
 import { BeforeAfterViewer } from '../components/issues/BeforeAfterViewer';
 import { VerificationModal } from '../components/verification/VerificationModal';
@@ -73,7 +74,7 @@ export const IssueDetailPage = () => {
 
   const handleUpvote = async () => {
     if (!isAuthenticated) {
-      alert('Please log in or select a demo role to +1 this complaint!');
+      alert('Please log in with your account to +1 this complaint!');
       return;
     }
 
@@ -110,8 +111,8 @@ export const IssueDetailPage = () => {
 
   if (loading) {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-16 text-center text-stone-400">
-        <div className="w-10 h-10 border-4 border-amber-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+      <div className="max-w-4xl mx-auto px-4 py-16 text-center text-slate-400">
+        <div className="w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
         <p className="text-sm">Loading complaint details and verification proof...</p>
       </div>
     );
@@ -121,7 +122,7 @@ export const IssueDetailPage = () => {
     return (
       <div className="max-w-xl mx-auto px-4 py-16 text-center">
         <AlertTriangle className="w-12 h-12 text-rose-500 mx-auto mb-3" />
-        <h2 className="text-lg font-bold text-stone-900 dark:text-stone-100">
+        <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100">
           {error || 'Issue Not Found'}
         </h2>
         <Link
@@ -146,8 +147,8 @@ export const IssueDetailPage = () => {
       {/* Back Link & Quick Nav */}
       <div className="flex items-center justify-between">
         <Link
-          to="/"
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-stone-500 hover:text-amber-500 transition-colors"
+          to="/feed"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-indigo-600 dark:hover:text-cyan-400 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" /> Back to Feed
         </Link>
@@ -157,7 +158,7 @@ export const IssueDetailPage = () => {
           <div className="flex items-center gap-2">
             <button
               onClick={() => setShowStatusModal(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold glass-card text-stone-700 dark:text-stone-200 hover:border-indigo-500"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold glass-card text-slate-700 dark:text-slate-200 hover:border-indigo-500"
             >
               <Sliders className="w-3.5 h-3.5 text-indigo-500" /> Status
             </button>
@@ -173,16 +174,16 @@ export const IssueDetailPage = () => {
 
       {/* Verification Action Banner (if RESOLVED) */}
       {isPendingVerification && (
-        <div className="p-5 sm:p-6 rounded-3xl glass-panel border border-emerald-500/50 bg-emerald-500/10 shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4 animate-pulse-subtle">
+        <div className="p-5 sm:p-6 rounded-3xl glass-panel border border-emerald-500/40 bg-emerald-500/10 shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4 animate-pulse-subtle">
           <div className="flex items-center gap-3 text-emerald-600 dark:text-emerald-400">
             <div className="p-3 rounded-2xl bg-emerald-500/20 shrink-0">
               <CheckCircle2 className="w-6 h-6 text-emerald-500" />
             </div>
             <div>
-              <h3 className="text-sm sm:text-base font-bold text-stone-900 dark:text-stone-100">
+              <h3 className="text-sm sm:text-base font-bold text-slate-900 dark:text-slate-100">
                 Maintenance Completed! User Verification Required
               </h3>
-              <p className="text-xs text-stone-600 dark:text-stone-300">
+              <p className="text-xs text-slate-600 dark:text-slate-300">
                 The assigned technician marked this issue as resolved. Inspect the work proof below and verify if the issue is truly solved.
               </p>
             </div>
@@ -190,7 +191,7 @@ export const IssueDetailPage = () => {
 
           <button
             onClick={() => setShowVerifyModal(true)}
-            className="w-full sm:w-auto shrink-0 px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-emerald-500 to-teal-600 hover:opacity-95 shadow-lg"
+            className="w-full sm:w-auto shrink-0 px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-emerald-500 to-teal-600 hover:opacity-95 shadow-glowEmerald"
           >
             Verify & Rate Resolution
           </button>
@@ -198,47 +199,45 @@ export const IssueDetailPage = () => {
       )}
 
       {/* Main Issue Card Header */}
-      <div className="glass-panel rounded-3xl p-6 sm:p-8 space-y-6 border border-stone-200/70 dark:border-stone-800/80 shadow-glass">
+      <div className="glass-panel rounded-3xl p-6 sm:p-8 space-y-6 border border-slate-200/70 dark:border-slate-800/80 shadow-glass">
         {/* Badges & Meta */}
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="px-3 py-1 rounded-full text-xs font-bold bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30">
-              {issue.category}
-            </span>
+            <CategoryBadge category={issue.category} />
             <StatusBadge status={issue.status} />
             <PriorityBadge priority={issue.priority} score={issue.priorityScore} />
           </div>
 
-          <div className="flex items-center gap-2 text-xs text-stone-400">
-            <Calendar className="w-3.5 h-3.5 text-stone-400" />
+          <div className="flex items-center gap-2 text-xs text-slate-400">
+            <Calendar className="w-3.5 h-3.5 text-slate-400" />
             <span>Reported {new Date(issue.createdAt).toLocaleDateString()}</span>
           </div>
         </div>
 
         {/* Title */}
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-stone-900 dark:text-stone-100 leading-tight">
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-slate-100 leading-tight">
           {issue.title}
         </h1>
 
         {/* Location Banner */}
-        <div className="p-3.5 rounded-2xl bg-stone-100/60 dark:bg-stone-900/50 border border-stone-200/50 dark:border-stone-800/60 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2.5 text-xs sm:text-sm font-semibold text-stone-800 dark:text-stone-200">
-            <MapPin className="w-4 h-4 text-amber-500 shrink-0" />
+        <div className="p-3.5 rounded-2xl bg-slate-100/70 dark:bg-slate-900/60 border border-slate-200/50 dark:border-slate-800/60 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5 text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-200">
+            <MapPin className="w-4 h-4 text-cyan-500 shrink-0" />
             <span>
               {issue.location?.block} • {issue.location?.floor} • {issue.location?.area}
             </span>
           </div>
-          <span className="text-[10px] uppercase font-bold text-stone-400 bg-stone-200/60 dark:bg-stone-800/80 px-2 py-0.5 rounded-md">
+          <span className="text-[10px] uppercase font-bold text-slate-500 dark:text-slate-400 bg-slate-200/60 dark:bg-slate-800/80 px-2 py-0.5 rounded-md">
             On Campus
           </span>
         </div>
 
         {/* Description */}
         <div>
-          <h3 className="text-xs font-bold uppercase tracking-wider text-stone-400 mb-1.5">
+          <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-1.5">
             Problem Description
           </h3>
-          <p className="text-xs sm:text-sm text-stone-700 dark:text-stone-300 leading-relaxed whitespace-pre-line">
+          <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-line">
             {issue.description}
           </p>
         </div>
@@ -246,7 +245,7 @@ export const IssueDetailPage = () => {
         {/* Media Gallery (if any photos uploaded) */}
         {issue.images && issue.images.length > 0 && (
           <div>
-            <h3 className="text-xs font-bold uppercase tracking-wider text-stone-400 mb-2">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
               Attached Evidence Photos
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -255,7 +254,7 @@ export const IssueDetailPage = () => {
                 return (
                   <div
                     key={i}
-                    className="relative h-64 rounded-2xl overflow-hidden border border-stone-200/60 dark:border-stone-800/80 bg-stone-900/10"
+                    className="relative h-64 rounded-2xl overflow-hidden border border-slate-200/70 dark:border-slate-800/80 bg-slate-900/20"
                   >
                     <img src={src} alt="Evidence" className="w-full h-full object-cover" />
                   </div>
@@ -266,22 +265,22 @@ export const IssueDetailPage = () => {
         )}
 
         {/* Community +1 Endorsement Bar */}
-        <div className="p-4 rounded-2xl glass-card border border-amber-500/25 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="p-4 rounded-2xl glass-card border border-indigo-500/25 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
-            <span className="text-xs font-bold text-amber-600 dark:text-amber-400 flex items-center gap-1.5">
+            <span className="text-xs font-bold text-indigo-600 dark:text-cyan-400 flex items-center gap-1.5">
               <ThumbsUp className="w-4 h-4" /> Community Prioritization
             </span>
-            <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5">
-              <strong>{upvotesCount} users</strong> have reported being affected by this issue.
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+              <strong>{upvotesCount} campus members</strong> have endorsed this issue.
             </p>
           </div>
 
           <button
             onClick={handleUpvote}
-            className={`w-full sm:w-auto px-5 py-2 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
+            className={`w-full sm:w-auto px-5 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
               hasUpvoted
-                ? 'bg-amber-500 text-white shadow-glowAmber scale-105'
-                : 'bg-stone-200/60 dark:bg-stone-800/80 text-stone-700 dark:text-stone-300 hover:bg-amber-500/15 hover:text-amber-500'
+                ? 'bg-gradient-to-r from-indigo-600 to-cyan-500 text-white shadow-glowBrand scale-105'
+                : 'bg-slate-200/60 dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 hover:bg-indigo-500/15 hover:text-indigo-600 dark:hover:text-cyan-400'
             }`}
           >
             <ThumbsUp className={`w-3.5 h-3.5 ${hasUpvoted ? 'fill-white' : ''}`} />
@@ -291,7 +290,7 @@ export const IssueDetailPage = () => {
         </div>
 
         {/* Stakeholder Details (Reporter & Assigned Worker) */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-stone-200/50 dark:border-stone-800/60">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-slate-200/50 dark:border-slate-800/60">
           {/* Reporter */}
           <div className="flex items-center gap-3 p-3.5 rounded-2xl glass-card">
             <img
@@ -302,14 +301,14 @@ export const IssueDetailPage = () => {
                 )}`
               }
               alt="Reporter"
-              className="w-10 h-10 rounded-xl object-cover ring-1 ring-amber-500/30"
+              className="w-10 h-10 rounded-xl object-cover ring-1 ring-indigo-500/30"
             />
             <div>
-              <span className="text-[10px] uppercase font-bold text-stone-400">Reported By</span>
-              <p className="text-xs font-bold text-stone-900 dark:text-stone-100">
+              <span className="text-[10px] uppercase font-bold text-slate-400">Reported By</span>
+              <p className="text-xs font-bold text-slate-900 dark:text-slate-100">
                 {issue.reportedBy?.name || 'Campus Resident'}
               </p>
-              <p className="text-[11px] text-stone-500 dark:text-stone-400">
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">
                 {issue.reportedBy?.department || 'General'}
               </p>
             </div>
@@ -326,14 +325,14 @@ export const IssueDetailPage = () => {
                   )}`
                 }
                 alt="Worker"
-                className="w-10 h-10 rounded-xl object-cover ring-1 ring-indigo-500/30"
+                className="w-10 h-10 rounded-xl object-cover ring-1 ring-cyan-500/30"
               />
               <div>
-                <span className="text-[10px] uppercase font-bold text-stone-400">Assigned Tech</span>
-                <p className="text-xs font-bold text-stone-900 dark:text-stone-100">
+                <span className="text-[10px] uppercase font-bold text-slate-400">Assigned Tech</span>
+                <p className="text-xs font-bold text-slate-900 dark:text-slate-100">
                   {issue.assignedWorker?.name || 'Unassigned (Pending Admin)'}
                 </p>
-                <p className="text-[11px] text-stone-500 dark:text-stone-400">
+                <p className="text-[11px] text-slate-500 dark:text-slate-400">
                   {issue.assignedWorker?.department || 'Awaiting dispatch'}
                 </p>
               </div>
@@ -345,7 +344,7 @@ export const IssueDetailPage = () => {
                 {issue.status === 'ASSIGNED' && (
                   <button
                     onClick={() => handleWorkerAction('acknowledge')}
-                    className="px-3 py-1.5 rounded-xl text-xs font-bold text-white bg-cyan-600 hover:bg-cyan-700"
+                    className="px-3 py-1.5 rounded-xl text-xs font-bold text-white bg-cyan-600 hover:bg-cyan-700 shadow-sm"
                   >
                     Acknowledge
                   </button>
@@ -353,7 +352,7 @@ export const IssueDetailPage = () => {
                 {issue.status === 'ACKNOWLEDGED' && (
                   <button
                     onClick={() => handleWorkerAction('start')}
-                    className="px-3 py-1.5 rounded-xl text-xs font-bold text-white bg-orange-600 hover:bg-orange-700"
+                    className="px-3 py-1.5 rounded-xl text-xs font-bold text-white bg-sky-600 hover:bg-sky-700 shadow-sm"
                   >
                     Start Work
                   </button>
@@ -361,7 +360,7 @@ export const IssueDetailPage = () => {
                 {['ACKNOWLEDGED', 'IN_PROGRESS'].includes(issue.status) && (
                   <button
                     onClick={() => setShowProofModal(true)}
-                    className="px-3 py-1.5 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700"
+                    className="px-3 py-1.5 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 shadow-sm"
                   >
                     Complete & Proof
                   </button>
@@ -377,11 +376,11 @@ export const IssueDetailPage = () => {
 
       {/* Rating & Review Section (if resolved/closed with feedback) */}
       {rating && (
-        <div className="glass-card rounded-2xl p-6 border border-amber-500/30 bg-amber-500/5">
+        <div className="glass-card rounded-2xl p-6 border border-indigo-500/30 bg-indigo-500/5">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               <Star className="w-5 h-5 text-amber-400 fill-amber-400" />
-              <h3 className="text-sm font-bold text-stone-900 dark:text-stone-100">
+              <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">
                 Verified User Rating & Review
               </h3>
             </div>
@@ -392,7 +391,7 @@ export const IssueDetailPage = () => {
                   className={`w-4 h-4 ${
                     rating.rating >= s
                       ? 'text-amber-400 fill-amber-400'
-                      : 'text-stone-300 dark:text-stone-700'
+                      : 'text-slate-300 dark:text-slate-700'
                   }`}
                 />
               ))}
@@ -402,7 +401,7 @@ export const IssueDetailPage = () => {
             </div>
           </div>
           {rating.review && (
-            <p className="text-xs text-stone-600 dark:text-stone-300 italic pl-7">
+            <p className="text-xs text-slate-600 dark:text-slate-300 italic pl-7">
               "{rating.review}"
             </p>
           )}

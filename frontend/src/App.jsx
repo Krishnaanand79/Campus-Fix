@@ -6,6 +6,7 @@ import { NotificationProvider } from './context/NotificationContext';
 import { MainLayout } from './layouts/MainLayout';
 
 // Pages
+import { LandingPage } from './pages/LandingPage';
 import { HomeFeedPage } from './pages/HomeFeedPage';
 import { ReportIssuePage } from './pages/ReportIssuePage';
 import { IssueDetailPage } from './pages/IssueDetailPage';
@@ -40,7 +41,8 @@ export const App = () => {
           <Router>
             <Routes>
               <Route path="/" element={<MainLayout />}>
-                <Route index element={<HomeFeedPage />} />
+                <Route index element={<LandingPage />} />
+                <Route path="feed" element={<HomeFeedPage />} />
                 <Route path="report" element={<ReportIssuePage />} />
                 <Route path="issues/:id" element={<IssueDetailPage />} />
                 <Route path="my-issues" element={<UserDashboardPage />} />

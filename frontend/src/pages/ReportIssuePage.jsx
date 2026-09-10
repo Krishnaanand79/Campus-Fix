@@ -101,8 +101,8 @@ export const ReportIssuePage = () => {
     e.preventDefault();
 
     if (!isAuthenticated) {
-      // Auto-log in demo student if user didn't log in
-      await demoLogin('student');
+      navigate('/login?role=student');
+      return;
     }
 
     if (!title || !description || !block || !area) {
@@ -164,17 +164,22 @@ export const ReportIssuePage = () => {
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
       {/* Header */}
-      <div className="mb-6">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30 mb-2">
-          <Sparkles className="w-3.5 h-3.5" />
-          <span>New Campus Maintenance Ticket</span>
+      <div className="mb-6 flex items-start gap-4">
+        <div className="w-16 h-16 shrink-0 hidden sm:block drop-shadow-md">
+          <img src="/campusfixWithoutNamelogo.png" alt="CampusFix" className="w-full h-full object-contain" />
         </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-stone-900 dark:text-stone-100">
-          Report an Infrastructure Problem
-        </h1>
-        <p className="text-xs sm:text-sm text-stone-500 dark:text-stone-400 mt-1">
-          Detailed location and clear descriptions allow technicians to diagnose and repair issues rapidly.
-        </p>
+        <div>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-indigo-500/15 text-indigo-600 dark:text-cyan-400 border border-indigo-500/30 mb-2">
+            <Sparkles className="w-3.5 h-3.5 text-cyan-400" />
+            <span>New Campus Maintenance Ticket</span>
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-slate-100">
+            Report an Infrastructure Problem
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
+            Detailed location and clear descriptions allow technicians to diagnose and repair issues rapidly.
+          </p>
+        </div>
       </div>
 
       {error && (
@@ -187,11 +192,11 @@ export const ReportIssuePage = () => {
       {/* Main Form Card */}
       <form
         onSubmit={handleFormSubmit}
-        className="glass-panel rounded-3xl p-6 sm:p-8 space-y-6 border border-stone-200/70 dark:border-stone-800/80 shadow-glass"
+        className="glass-panel rounded-3xl p-6 sm:p-8 space-y-6 border border-slate-200/70 dark:border-slate-800/80 shadow-glass"
       >
         {/* Title */}
         <div>
-          <label className="block text-xs font-bold text-stone-900 dark:text-stone-100 uppercase tracking-wider mb-1.5">
+          <label className="block text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider mb-1.5">
             Issue Title <span className="text-rose-500">*</span>
           </label>
           <input
@@ -201,14 +206,14 @@ export const ReportIssuePage = () => {
             onBlur={checkDuplicates}
             required
             placeholder="e.g. Water leakage from ceiling near Hostel A entrance"
-            className="w-full p-3 rounded-xl text-xs sm:text-sm glass-input placeholder-stone-400 focus:ring-2 focus:ring-amber-500/20"
+            className="w-full p-3 rounded-xl text-xs sm:text-sm glass-input placeholder-slate-400 focus:ring-2 focus:ring-indigo-500/20"
           />
         </div>
 
         {/* Category & Severity Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-xs font-bold text-stone-900 dark:text-stone-100 uppercase tracking-wider mb-1.5">
+            <label className="block text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider mb-1.5">
               Category <span className="text-rose-500">*</span>
             </label>
             <select
@@ -225,7 +230,7 @@ export const ReportIssuePage = () => {
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-stone-900 dark:text-stone-100 uppercase tracking-wider mb-1.5">
+            <label className="block text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider mb-1.5">
               Estimated Severity
             </label>
             <div className="grid grid-cols-4 gap-1.5">
@@ -234,16 +239,16 @@ export const ReportIssuePage = () => {
                   type="button"
                   key={s}
                   onClick={() => setSeverity(s)}
-                  className={`py-2 rounded-xl text-[11px] font-bold uppercase transition-all ${
+                  className={`py-2 rounded-xl text-[11px] font-bold uppercase transition-all cursor-pointer ${
                     severity === s
                       ? s === 'CRITICAL'
-                        ? 'bg-rose-500 text-white shadow-lg'
+                        ? 'bg-rose-500 text-white shadow-glowRose font-extrabold'
                         : s === 'HIGH'
-                        ? 'bg-orange-500 text-white shadow-lg'
+                        ? 'bg-amber-500 text-white shadow-glowAmber font-extrabold'
                         : s === 'MEDIUM'
-                        ? 'bg-amber-500 text-white shadow-lg'
-                        : 'bg-emerald-500 text-white shadow-lg'
-                      : 'bg-stone-200/50 dark:bg-stone-800/60 text-stone-600 dark:text-stone-400'
+                        ? 'bg-indigo-600 text-white shadow-glowBrand font-extrabold'
+                        : 'bg-emerald-500 text-white shadow-glowEmerald font-extrabold'
+                      : 'bg-slate-200/60 dark:bg-slate-800/80 text-slate-600 dark:text-slate-400 hover:bg-slate-300/60 dark:hover:bg-slate-700/60'
                   }`}
                 >
                   {s}
@@ -254,15 +259,15 @@ export const ReportIssuePage = () => {
         </div>
 
         {/* Structured Location Section */}
-        <div className="p-4 rounded-2xl bg-stone-100/60 dark:bg-stone-900/40 border border-stone-200/50 dark:border-stone-800/50 space-y-3">
-          <div className="flex items-center gap-2 text-xs font-bold text-stone-900 dark:text-stone-100">
-            <MapPin className="w-4 h-4 text-amber-500" />
+        <div className="p-4 rounded-2xl bg-slate-100/70 dark:bg-slate-900/50 border border-slate-200/50 dark:border-slate-800/60 space-y-3">
+          <div className="flex items-center gap-2 text-xs font-bold text-slate-900 dark:text-slate-100">
+            <MapPin className="w-4 h-4 text-cyan-500" />
             <span>Structured Campus Location</span>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-[11px] font-semibold text-stone-500 dark:text-stone-400 mb-1">
+              <label className="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1">
                 Campus Block / Facility <span className="text-rose-500">*</span>
               </label>
               <select
@@ -279,7 +284,7 @@ export const ReportIssuePage = () => {
             </div>
 
             <div>
-              <label className="block text-[11px] font-semibold text-stone-500 dark:text-stone-400 mb-1">
+              <label className="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1">
                 Floor Level
               </label>
               <select
@@ -297,7 +302,7 @@ export const ReportIssuePage = () => {
           </div>
 
           <div>
-            <label className="block text-[11px] font-semibold text-stone-500 dark:text-stone-400 mb-1">
+            <label className="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1">
               Specific Room / Area / Landmark <span className="text-rose-500">*</span>
             </label>
             <input
@@ -314,7 +319,7 @@ export const ReportIssuePage = () => {
 
         {/* Description */}
         <div>
-          <label className="block text-xs font-bold text-stone-900 dark:text-stone-100 uppercase tracking-wider mb-1.5">
+          <label className="block text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider mb-1.5">
             Detailed Problem Description <span className="text-rose-500">*</span>
           </label>
           <textarea
@@ -323,16 +328,16 @@ export const ReportIssuePage = () => {
             required
             rows={4}
             placeholder="Describe exactly what happened, since when it has been occurring, and any immediate safety hazards..."
-            className="w-full p-3 rounded-xl text-xs sm:text-sm glass-input placeholder-stone-400 focus:ring-2 focus:ring-amber-500/20"
+            className="w-full p-3 rounded-xl text-xs sm:text-sm glass-input placeholder-slate-400 focus:ring-2 focus:ring-indigo-500/20"
           />
         </div>
 
         {/* Photo / Video Upload */}
         <div>
-          <label className="block text-xs font-bold text-stone-900 dark:text-stone-100 uppercase tracking-wider mb-1.5">
+          <label className="block text-xs font-bold text-slate-900 dark:text-slate-100 uppercase tracking-wider mb-1.5">
             Upload Evidence Photos or Videos (Optional)
           </label>
-          <div className="border-2 border-dashed border-stone-300 dark:border-stone-700 rounded-2xl p-5 text-center hover:border-amber-500/50 transition-colors">
+          <div className="border-2 border-dashed border-slate-300 dark:border-slate-700 rounded-2xl p-5 text-center hover:border-indigo-500/50 transition-colors">
             <input
               type="file"
               multiple
@@ -345,13 +350,13 @@ export const ReportIssuePage = () => {
               htmlFor="report-media-input"
               className="cursor-pointer flex flex-col items-center gap-2"
             >
-              <div className="p-3 rounded-2xl bg-amber-500/10 text-amber-500">
+              <div className="p-3 rounded-2xl bg-indigo-500/10 text-indigo-500 dark:text-cyan-400">
                 <Camera className="w-6 h-6" />
               </div>
-              <span className="text-xs font-bold text-amber-600 dark:text-amber-400 hover:underline">
+              <span className="text-xs font-bold text-indigo-600 dark:text-cyan-400 hover:underline">
                 Upload image or short video clip
               </span>
-              <span className="text-[10px] text-stone-400">
+              <span className="text-[10px] text-slate-400">
                 Attach clear photo showing the damage (Max 5 files, 25MB each)
               </span>
             </label>
@@ -362,7 +367,7 @@ export const ReportIssuePage = () => {
               {previews.map((src, i) => (
                 <div
                   key={i}
-                  className="relative w-20 h-20 rounded-xl overflow-hidden shrink-0 border border-stone-300 dark:border-stone-700"
+                  className="relative w-20 h-20 rounded-xl overflow-hidden shrink-0 border border-slate-300 dark:border-slate-700"
                 >
                   <img src={src} alt="Upload preview" className="w-full h-full object-cover" />
                 </div>
@@ -372,12 +377,12 @@ export const ReportIssuePage = () => {
         </div>
 
         {/* Submit & Duplicate Check CTAs */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-stone-200/50 dark:border-stone-800/60">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-slate-200/50 dark:border-slate-800/60">
           <button
             type="button"
             onClick={checkDuplicates}
             disabled={checkingDuplicates || !title.trim()}
-            className="w-full sm:w-auto px-4 py-2.5 rounded-xl text-xs font-semibold glass-card text-amber-600 dark:text-amber-400 hover:bg-amber-500/10 flex items-center justify-center gap-1.5"
+            className="w-full sm:w-auto px-4 py-2.5 rounded-xl text-xs font-semibold glass-card text-indigo-600 dark:text-cyan-400 hover:bg-indigo-500/10 flex items-center justify-center gap-1.5 cursor-pointer"
           >
             <Search className="w-3.5 h-3.5" />
             {checkingDuplicates ? 'Scanning Duplicates...' : 'Check Duplicate Complaints'}
@@ -386,7 +391,7 @@ export const ReportIssuePage = () => {
           <button
             type="submit"
             disabled={submitting}
-            className="w-full sm:w-auto px-6 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-amber-500 via-orange-500 to-rose-500 hover:opacity-95 shadow-glowAmber hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+            className="w-full sm:w-auto px-6 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-indigo-600 via-blue-600 to-cyan-500 hover:opacity-95 shadow-glowBrand hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center gap-2 cursor-pointer"
           >
             <PlusCircle className="w-4 h-4" />
             {submitting ? 'Submitting Complaint...' : 'Submit Campus Complaint'}

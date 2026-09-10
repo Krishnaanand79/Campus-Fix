@@ -182,10 +182,14 @@ export const assignWorker = async (req, res) => {
       type: 'STATUS_CHANGE',
     });
 
+    const populatedIssue = await Issue.findById(issue._id)
+      .populate('reportedBy', 'name email department phone avatar')
+      .populate('assignedWorker', 'name email department phone avatar specialties');
+
     return res.status(200).json({
       success: true,
       message: `Task successfully assigned to ${worker.name}`,
-      issue,
+      issue: populatedIssue,
     });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });

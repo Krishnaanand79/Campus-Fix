@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import { OAuth2Client } from 'google-auth-library';
 import { User } from '../models/User.js';
 
 const generateToken = (id) => {
@@ -6,6 +7,8 @@ const generateToken = (id) => {
     expiresIn: '30d',
   });
 };
+
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 export const register = async (req, res) => {
   try {
@@ -108,5 +111,85 @@ export const updateProfile = async (req, res) => {
     });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+export const googleLogin = async (req, res) => {
+  try {
+    const { credential, role } = req.body;
+
+    if (!credential) {
+      return res.status(400).json({
+        success: false,
+        message: 'Google credential token is required.',
+      });
+    }
+
+    const clientId = process.env.GOOGLE_CLIENT_ID;
+    const ticket = await googleClient.verifyIdToken({
+      idToken: credential,
+      audience: clientId,
+    });
+
+    const payload = ticket.getPayload();
+    if (!payload || !payload.email) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid Google authentication payload.',
+      });
+    }
+
+    const { sub: googleId, email, name, picture } = payload;
+
+    // Look for existing user by googleId or email
+    let user = await User.findOne({
+      $or: [{ googleId }, { email: email.toLowerCase() }],
+    });
+
+    if (user) {
+      let updated = false;
+      if (!user.googleId) {
+        user.googleId = googleId;
+        user.authProvider = 'google';
+        updated = true;
+      }
+      if (!user.avatar && picture) {
+        user.avatar = picture;
+        updated = true;
+      }
+      if (updated) {
+        await user.save();
+      }
+    } else {
+      // Validate role or default to USER
+      const assignedRole = role && ['USER', 'ADMIN', 'WORKER'].includes(role.toUpperCase())
+        ? role.toUpperCase()
+        : 'USER';
+
+      user = await User.create({
+        name: name || email.split('@')[0],
+        email: email.toLowerCase(),
+        googleId,
+        avatar: picture || '',
+        role: assignedRole,
+        department: 'General Campus',
+        authProvider: 'google',
+      });
+    }
+
+    const token = generateToken(user._id);
+
+    return res.status(200).json({
+      success: true,
+      message: 'Google authentication successful',
+      token,
+      user,
+    });
+  } catch (error) {
+    console.error('Google Auth Verification Error:', error);
+    return res.status(401).json({
+      success: false,
+      message: error.message || 'Google token verification failed.',
+    });
   }
 };
