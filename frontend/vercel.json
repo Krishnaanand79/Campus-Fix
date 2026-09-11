@@ -5,6 +5,10 @@
       "destination": "https://campus-fix-fkrw.onrender.com/api/$1"
     },
     {
+      "source": "/uploads/(.*)",
+      "destination": "https://campus-fix-fkrw.onrender.com/uploads/$1"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }

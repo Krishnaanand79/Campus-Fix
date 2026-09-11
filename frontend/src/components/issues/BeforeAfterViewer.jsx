@@ -13,8 +13,12 @@ export const BeforeAfterViewer = ({ proof, originalImages = [] }) => {
   const afterImg =
     proof.afterMedia?.[0] || 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=800';
 
-  const formatSrc = (src) =>
-    src?.startsWith('/uploads') ? `http://localhost:5000${src}` : src;
+  const formatSrc = (src) => {
+    if (!src) return '';
+    return src.startsWith('http://localhost:5000')
+      ? src.replace('http://localhost:5000', '')
+      : src;
+  };
 
   return (
     <div className="glass-card rounded-3xl p-6 sm:p-7 border border-emerald-500/30 dark:border-emerald-500/20 bg-emerald-500/5 shadow-glass">

@@ -58,8 +58,8 @@ export const IssueCard = ({ issue, onUpvoteChange }) => {
 
   const thumbnail =
     issue.images && issue.images.length > 0
-      ? issue.images[0].startsWith('/uploads')
-        ? `http://localhost:5000${issue.images[0]}`
+      ? issue.images[0].startsWith('http://localhost:5000')
+        ? issue.images[0].replace('http://localhost:5000', '')
         : issue.images[0]
       : null;
 

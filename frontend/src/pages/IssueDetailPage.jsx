@@ -250,7 +250,9 @@ export const IssueDetailPage = () => {
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {issue.images.map((img, i) => {
-                const src = img.startsWith('/uploads') ? `http://localhost:5000${img}` : img;
+                const src = img.startsWith('http://localhost:5000')
+                  ? img.replace('http://localhost:5000', '')
+                  : img;
                 return (
                   <div
                     key={i}
